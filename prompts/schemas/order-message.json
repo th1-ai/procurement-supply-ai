@@ -1,0 +1,16 @@
+{
+  "type": "object",
+  "properties": {
+    "message": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 2000
+    },
+    "channel": {
+      "type": "string",
+      "enum": ["whatsapp", "email"]
+    }
+  },
+  "required": ["message", "channel"],
+  "additionalProperties": false
+}

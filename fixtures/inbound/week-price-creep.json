@@ -1,0 +1,23 @@
+{
+  "_comment": "Escalation: same demand as week-normal, but Frigo Atlantico's sea bass is 12% above its 90-day baseline. Exercises the price-flag LLM stage, and - with the Supplier Ordering sub-agent on and Frigo Atlantico having no portal - the order-message stage on the SAME item. This is the fixture the interactive-provider retry regression test uses - see docs/how-it-works.md 'Idempotency' and tests/test_procurement_retry.py.",
+  "as_of": "2026-09-01",
+  "horizon_days": 7,
+  "capacity_rooms": 42,
+  "reservations": [
+    {"check_in": "2026-08-29", "check_out": "2026-09-08", "status": "confirmed"},
+    {"check_in": "2026-08-30", "check_out": "2026-09-08", "status": "confirmed"},
+    {"check_in": "2026-08-31", "check_out": "2026-09-07", "status": "confirmed"},
+    {"check_in": "2026-09-01", "check_out": "2026-09-05", "status": "confirmed"},
+    {"check_in": "2026-09-02", "check_out": "2026-09-08", "status": "confirmed"},
+    {"check_in": "2026-08-30", "check_out": "2026-09-06", "status": "confirmed"}
+  ],
+  "covers": [
+    {"day_offset": 0, "covers": 60}, {"day_offset": 1, "covers": 70},
+    {"day_offset": 2, "covers": 75}, {"day_offset": 3, "covers": 65},
+    {"day_offset": 4, "covers": 68}, {"day_offset": 5, "covers": 90},
+    {"day_offset": 6, "covers": 95}
+  ],
+  "catalog_overrides": {
+    "sea-bass": {"unit_cost": 20.72, "baseline_unit_cost": 18.5}
+  }
+}

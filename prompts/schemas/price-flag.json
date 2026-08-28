@@ -1,0 +1,12 @@
+{
+  "type": "object",
+  "properties": {
+    "flag_note": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 400
+    }
+  },
+  "required": ["flag_note"],
+  "additionalProperties": false
+}

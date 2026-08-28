@@ -1,0 +1,21 @@
+{
+  "_comment": "Happy path: moderate occupancy, no price creep, no sub-agent. Loaded directly by tools/supply_engine.py's pure functions in tests - see docs/how-it-works.md 'Idempotency'.",
+  "as_of": "2026-09-01",
+  "horizon_days": 7,
+  "capacity_rooms": 42,
+  "reservations": [
+    {"check_in": "2026-08-29", "check_out": "2026-09-08", "status": "confirmed"},
+    {"check_in": "2026-08-30", "check_out": "2026-09-08", "status": "confirmed"},
+    {"check_in": "2026-08-31", "check_out": "2026-09-07", "status": "confirmed"},
+    {"check_in": "2026-09-01", "check_out": "2026-09-05", "status": "confirmed"},
+    {"check_in": "2026-09-02", "check_out": "2026-09-08", "status": "confirmed"},
+    {"check_in": "2026-08-30", "check_out": "2026-09-06", "status": "confirmed"}
+  ],
+  "covers": [
+    {"day_offset": 0, "covers": 60}, {"day_offset": 1, "covers": 70},
+    {"day_offset": 2, "covers": 75}, {"day_offset": 3, "covers": 65},
+    {"day_offset": 4, "covers": 68}, {"day_offset": 5, "covers": 90},
+    {"day_offset": 6, "covers": 95}
+  ],
+  "catalog_overrides": {}
+}

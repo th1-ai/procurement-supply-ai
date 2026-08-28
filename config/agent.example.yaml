@@ -1,0 +1,83 @@
+# ---------------------------------------------------------------------------
+# agent.yaml - Procurement / Supply AI's own knobs (on top of config/hotel.yaml).
+#
+# `make setup` copies this file to config/agent.yaml. Edit THAT one.
+# ---------------------------------------------------------------------------
+
+# Which of pms/email/messaging this agent actually reads from - both email
+# and messaging are send-only here (delivering an approved supplier order),
+# it never reads either. Keeps `make run`'s SAMPLE DATA warning honest when
+# `systems.email.adapter`/`systems.messaging.adapter` are left as `mock`.
+# See core/adapters/__init__.py:_systems_used.
+systems_used: [pms]
+
+procurement:
+  horizon_days: 7                    # nights/covers looked at ahead - spec's HORIZON_DAYS
+  covers_per_occupied_room: 4.6      # house-average F&B driver; calibrate from your own numbers
+  par_buffer_pct: 10                 # cushion on top of forecast when par-buffer rule is on
+  waste_cap_pct: 105                 # hard cap for perishables (category F&B, lead_days<=1)
+  price_watch_threshold_pct: 8       # flag a line this far above its 90-day baseline
+
+  # WhatsApp chat id per supplier with no online portal (systems.messaging).
+  # Used both when a human sends an approved order (tools/review.py send)
+  # and by the routine auto-send lane below. Leave blank on mock/demo.
+  supplier_chat_ids:
+    "Frigo Atlântico": ""
+    "Lisbon Bakery Co.": ""
+
+  # Email address per supplier who takes orders by email instead of
+  # WhatsApp. Only used when a drafted message's channel is `email` AND
+  # `systems.email.adapter` (config/hotel.yaml) is a real adapter (imap or
+  # gmail) - `tools/review.py send` refuses an email send otherwise, with
+  # the approval kept, rather than quietly send it over WhatsApp. See
+  # docs/integrations.md.
+  supplier_emails:
+    "Frigo Atlântico": ""
+
+  # The five toggles from the spec. All on by default; flip one off to see
+  # the effect ("Order to the forecast" off = a flat par top-up, no occupancy
+  # in the maths at all - see docs/how-it-works.md).
+  rules:
+    occupancy_forecast: true
+    waste_guard: true
+    par_buffer: true
+    supplier_consolidate: true
+    price_watch: true
+
+  # The one path that can send with nobody reviewing it first - a routine,
+  # low-risk order to a named supplier (the roster's "daily bakery order").
+  # Draft-only until a hotel deliberately opts in - see workflows/90-go-live.md
+  # step "turn on routine auto-send". Even with autonomy: send, the write is
+  # attempted and only succeeds once `send_message` is also removed from
+  # review.require_approval_for in config/hotel.yaml - see docs/how-it-works.md
+  # "Design decisions" #6. Until then it safely falls back to pending_review.
+  routine_orders:
+    autonomy: draft                  # draft | send
+    suppliers: ["Lisbon Bakery Co."] # order lines from these suppliers only
+    max_total_eur: 60                # never auto-eligible above this order value
+
+# Supplier Ordering AI ("The Buyer") - off by default. The parent agent is
+# fully useful without it: every order still gets generated, argued and
+# queued for a human. Turning this on adds two things to an approved order:
+# a `channel: portal` label + audit line for suppliers with an online
+# ordering system, and an LLM-drafted ready-to-send message for suppliers
+# that do not have one. See docs/sub-agents.md and workflows/20-supplier-ordering.md.
+subagents:
+  supplier_ordering:
+    enabled: false
+    portal_suppliers: ["Linens & Co", "Green Grocer Lda", "Office & Guest Supplies"]
+
+llm:
+  # Per-task effort override (falls back to llm.effort in hotel.yaml).
+  purchase_note_effort: low
+  price_flag_effort: low
+  order_message_effort: low
+
+# One entry per recurring job. `tools/schedule.py --all` prints a cron/launchd/
+# systemd snippet for every entry below - see README section 9 and
+# scheduler/crontab.example, which show exactly that output.
+schedule:
+  procurement:
+    command: tools/run.py --once
+    cadence: morning     # 07:00 daily - the horizon is a week, so a daily check
+                         # catches occupancy and covers that changed since yesterday

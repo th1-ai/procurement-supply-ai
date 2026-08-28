@@ -1,0 +1,9 @@
+{
+  "_comment": "Edge case: no reservations, no covers in the horizon. Proves the roster claim 'won't order on zero-guest nights' falls out of the room- and cover-driven formulas, not a special-cased check - see specs/procurement-supply-ai.md section 6.",
+  "as_of": "2026-09-01",
+  "horizon_days": 7,
+  "capacity_rooms": 42,
+  "reservations": [],
+  "covers": [],
+  "catalog_overrides": {}
+}

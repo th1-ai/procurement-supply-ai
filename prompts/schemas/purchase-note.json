@@ -1,0 +1,12 @@
+{
+  "type": "object",
+  "properties": {
+    "note": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 800
+    }
+  },
+  "required": ["note"],
+  "additionalProperties": false
+}
